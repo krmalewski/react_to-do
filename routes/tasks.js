@@ -7,7 +7,7 @@ const tasksRouter = express.Router();
 const db = require('../models/task');
 
 /* convenience method for sending */
-const sendJSONresp = (req, res, next) => res.jeson(res.rows);
+const sendJSONresp = (req, res) => res.jeson(res.rows);
 // tasks/:id
 // this is more specific than the /tasks, so it goes above
 tasksRouter.route('/:taskID')
