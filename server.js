@@ -1,32 +1,43 @@
 /* eslint no-multi-spaces: ["error", { exceptions: { "VariableDeclarator": true } }] */
-/* eslint import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
-/* eslint strict: ["error", {"global": true}] */
+/* eslint no-console: ["error", { allow: ["log"] }] */
 
 'use strict';
 
-// regular stuff
-const express     = require('express');
-const bodyParser  = require('body-parser');
-const logger      = require('morgan');
+const express        = require('express');
+const logger         = require('morgan');
+const bodyParser     = require('body-parser');
+const path           = require('path');
+const indexRouter    = require('./routes/index');
+const tasksRouter    = require('./routes/tasks');
 
-// This tests to see if we have NODE_ENV in our environment.
-// Only load the dotenv if we need it.
-const isDev       = !('NODE_ENV' in process.env) && require('dotenv').config() && true;
+// This tests to see if we have NODE_ENV in our enviroment.
+// Only load the dotenv if there is no NODE_ENV in our process.env
+const isDev         =!('NODE_ENV' in process.env) && require('dotenv').config() && true;
 
-const app         = express();
-const PORT        = process.argv[2] || process.env.port || 3000;
+const app = express();
+const PORT = process.env.port || 3000;
 
-// set up some logging
+// Set up some logging
 app.use(logger(isDev ? 'dev' : 'common'));
 
-// we're only going to accept json
+app.set('view engine', 'ejs');
+app.set('views', 'views');
+
+// parse application/json
 app.use(bodyParser.json());
 
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// generic errir handler
+// if I use next(Err), it will triggor this function
+// function signature has four parameters, the first parameter is expecting an error
 app.use((err, req, res, next) => {
-  res.status(500).send('Something broke!', next);
+  res.status(500).send('Something broke!').end(next);
 });
 
-// Let's go!
-app.listen(PORT, () => {
-  console.log(process.env, isDev);
-});
+app.listen(PORT, () => console.log('Server is listening on port ', PORT));
+
+// Set up the routes
+app.use('/', indexRouter);
+app.use('/tasks', tasksRouter);
