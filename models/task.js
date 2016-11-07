@@ -40,10 +40,4 @@ module.exports = {
     });
   },
 
-  /* PUT /tasks/:taskID */
-  updateTask(req, res, next) {
-  },
-
-  /* DELETE */
-
 };
